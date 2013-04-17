@@ -4,7 +4,7 @@ NoAnalytics
 Clone of GoogleAnalytics for Android that does nothing - use as replacement in open source apps to make them free.
 
 ###Usage
-Replace "libGoogleAnalytics.jar" (or whatever it's named) with the binary "noAnalytics-0.1.jar" (or a self-compiled version) and recompile the Application.
+Replace "libGoogleAnalytics.jar" (or whatever it's named) with the binary "noAnalytics-0.*.jar" (or a self-compiled version) and recompile the Application.
 
 ###License
 > Copyright 2012 μg Project Team

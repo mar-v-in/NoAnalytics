@@ -53,7 +53,7 @@ public final class Transaction {
 		items.put(item.getSKU(), item);
 	}
 
-	public List getItems() {
+	public List<Item> getItems() {
 		return new ArrayList(items.values());
 	}
 

@@ -12,6 +12,14 @@ import java.util.Map;
 public class Tracker {
 	private Map<String, String> map = new HashMap<String, String>();
 	private ExceptionParser exceptionParser;
+	private TrackerHandler handler;
+
+	Tracker(String trackingId, TrackerHandler handler) {
+		map.put("trackingId", trackingId);
+		map.put("sampleRate", Integer.toString(100));
+		map.put("useSecure", Boolean.toString(true));
+		this.handler = handler;
+	}
 
 	private static String microsToCurrencyString(long currencyInMicros) {
 		return new DecimalFormat("0.######", new DecimalFormatSymbols(Locale.US))
@@ -40,7 +48,7 @@ public class Tracker {
 	}
 
 	public void sendView() {
-
+		internalSend("appview", null);
 	}
 
 	@Deprecated
@@ -50,6 +58,7 @@ public class Tracker {
 
 	public void sendView(String appScreen) {
 		setAppScreen(appScreen);
+		internalSend("appview", null);
 	}
 
 	@Deprecated
@@ -58,7 +67,7 @@ public class Tracker {
 	}
 
 	public void sendEvent(String category, String action, String label, Long value) {
-
+		internalSend("event", constructEvent(category, action, label, value));
 	}
 
 	@Deprecated
@@ -67,7 +76,22 @@ public class Tracker {
 	}
 
 	public void sendTransaction(Transaction transaction) {
+		internalSend("tran", constructTransaction(transaction));
+		for (Transaction.Item item : transaction.getItems()) {
+			internalSend("item", constructItem(item, transaction));
+		}
+	}
 
+	private Map<String, String> constructItem(Transaction.Item transactionItem, Transaction transaction) {
+		Map<String, String> item = new HashMap<String, String>();
+		item.put("transactionId", transaction.getTransactionId());
+		item.put("currencyCode", transaction.getCurrencyCode());
+		item.put("itemCode", transactionItem.getSKU());
+		item.put("itemName", transactionItem.getName());
+		item.put("itemCategory", transactionItem.getCategory());
+		item.put("itemPrice", microsToCurrencyString(transactionItem.getPriceInMicros()));
+		item.put("itemQuantity", Long.toString(transactionItem.getQuantity()));
+		return item;
 	}
 
 	@Deprecated
@@ -76,7 +100,7 @@ public class Tracker {
 	}
 
 	public void sendException(String description, boolean fatal) {
-
+		internalSend("exception", constructException(description, fatal));
 	}
 
 	@Deprecated
@@ -86,8 +110,13 @@ public class Tracker {
 
 	public void sendException(String threadName, Throwable exception, boolean fatal) {
 		if (exceptionParser != null) {
-			// Make sure own ExceptionParser is used.
 			sendException(exceptionParser.getDescription(threadName, exception), fatal);
+		} else {
+			try {
+				internalSend("exception", constructRawException(threadName, exception, fatal));
+			} catch (IOException e) {
+				sendException("Unknown Exception", fatal);
+			}
 		}
 	}
 
@@ -97,7 +126,7 @@ public class Tracker {
 	}
 
 	public void sendTiming(String category, long intervalInMilliseconds, String name, String label) {
-
+		internalSend("timing", constructTiming(category, intervalInMilliseconds, name, label));
 	}
 
 	@Deprecated
@@ -106,15 +135,29 @@ public class Tracker {
 	}
 
 	public void sendSocial(String network, String action, String target) {
-
+		internalSend("social", constructSocial(network, action, target));
 	}
 
 	public void close() {
-
+		if (handler != null) {
+			handler.closeTracker(this);
+		}
 	}
 
-	public void send(String hitType, Map params) {
-		map.putAll(params);
+	public void send(String hitType, Map<String, String> params) {
+		internalSend(hitType, params);
+	}
+
+	private void internalSend(String hitType, Map<String, String> params) {
+		if (params != null) {
+			map.putAll(params);
+		}
+		map.put("hitType", hitType);
+
+		// Clone the map
+		Map<String, String> map = new HashMap<String, String>();
+		map.putAll(this.map);
+		handler.sendHit(map);
 	}
 
 	public String get(String key) {
