@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GoogleAnalytics implements TrackerHandler {
+public class GoogleAnalytics implements TrackerHandler, Analytics {
 	private static GoogleAnalytics instance;
 	private boolean debug = false;
 	private Map<String, Tracker> trackers = new HashMap<String, Tracker>();
@@ -24,6 +24,7 @@ public class GoogleAnalytics implements TrackerHandler {
 		}
 	}
 
+	@Override
 	public void setDebug(boolean debug) {
 		this.debug = debug;
 	}
@@ -32,12 +33,18 @@ public class GoogleAnalytics implements TrackerHandler {
 		return debug;
 	}
 
+	@Override
+	public boolean debugEnabled() {
+		return isDebugEnabled();
+	}
+
+	@Override
 	public synchronized Tracker getTracker(String trackingId) {
 		if (!trackers.containsKey(trackingId)) {
 			Tracker tracker = new Tracker(trackingId, this);
 			trackers.put(trackingId, tracker);
 			if (defaultTracker == null) {
-				defaultTracker = tracker;
+				setDefaultTracker(tracker);
 			}
 			return tracker;
 		}
@@ -51,4 +58,27 @@ public class GoogleAnalytics implements TrackerHandler {
 	@Override
 	public void sendHit(Map map) {
 	}
+
+	@Override
+	public void requestAppOptOut(Analytics.AppOptOutCallback callback)
+	{
+	}
+
+	@Override
+	public void setDefaultTracker(Tracker tracker)
+	{
+		defaultTracker = tracker;
+	}
+
+	@Override
+	public Tracker getDefaultTracker()
+	{
+		return defaultTracker;
+	}
+
+	@Override
+	public void setAppOptOut(boolean optOut)
+	{
+	}
+
 }
