@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <target name="jar" depends="debug">
+        <jar destfile="bin/noAnalytics.jar"
+            basedir="bin/classes"/>
+    </target>
+</project>
