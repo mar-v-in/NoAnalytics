@@ -1,6 +1,16 @@
 package com.google.analytics.tracking.android;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MapBuilder {
+
+	private Map<String, String> map = new HashMap<String, String>();
+
+	public Map<String,String> build() {
+		return map;
+	}
+
 	public static MapBuilder createAppView() {
 		return new MapBuilder();
 	}
@@ -36,14 +46,16 @@ public class MapBuilder {
 	}
 
 	public String get(String paramName) {
-		return paramName;
+		return map.get(paramName);
 	}
 
 	public MapBuilder set(String paramName, String paramValue) {
+		map.put(paramName, paramValue);
 		return this;
 	}
 
-	public MapBuilder setAll(java.util.Map<String, String> params) {
+	public MapBuilder setAll(Map<String, String> params) {
+		map.putAll(params);
 		return this;
 	}
 

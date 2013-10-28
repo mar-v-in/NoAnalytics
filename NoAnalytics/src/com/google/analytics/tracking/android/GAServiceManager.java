@@ -12,14 +12,14 @@ public class GAServiceManager extends ServiceManager {
 	}
 
 	@Override
-	void dispatchLocalHits() {
+	public void dispatchLocalHits() {
 	}
 
 	@Override
-	void setForceLocalDispatch() {
+	public void setForceLocalDispatch() {
 	}
 
 	@Override
-	void setLocalDispatchPeriod(int dispatchPeriodInSeconds) {
+	public void setLocalDispatchPeriod(int dispatchPeriodInSeconds) {
 	}
 }
