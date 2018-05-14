@@ -6,16 +6,16 @@ Clone of GoogleAnalytics for Android that does nothing - use as replacement in o
 Usage
 -----
 
-###To build CyanogenMod
+### To build CyanogenMod
 Once android_external_google is removed from CyanogenMod, it is no longer possible to build the Settings app. Luckily you can add NoAnalytics to your build system to fix this:
 
 	<project path="external/NoAnalytics" name="mar-v-in/NoAnalytics" revision="master" />
 
 
-###General Purpose
+### General Purpose
 Replace "libGoogleAnalytics.jar" (or whatever it's named) with the binary "noAnalytics-0.*.jar" (or a self-compiled version) and recompile the Application.
 
-###License
+### License
 > Copyright 2012-2014 μg Project Team
 
 > Licensed under the Apache License, Version 2.0 (the "License");
